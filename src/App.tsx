@@ -5,13 +5,25 @@ import Tasks from "./pages/Tasks";
 import Stats from "./pages/Stats";
 import Navbar from "./components/Navbar";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Task } from "./interfaces/Task";
 
 function App() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    obtenerTareas();
+  }, []);
+
+  const obtenerTareas = async () => {
+    const respuesta = await fetch("http://localhost:3001/tasks");
+
+    const data = await respuesta.json();
+
+    setTasks(data);
+  };
 
   return (
     <BrowserRouter>
@@ -31,6 +43,7 @@ function App() {
             <Tasks
               tasks={tasks}
               setTasks={setTasks}
+              obtenerTareas={obtenerTareas}
             />
           }
         />

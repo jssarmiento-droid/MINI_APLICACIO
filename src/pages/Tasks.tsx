@@ -7,64 +7,66 @@ import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 
 interface Props {
-
   tasks: Task[];
 
   setTasks: React.Dispatch<
     React.SetStateAction<Task[]>
   >;
+
+  obtenerTareas: () => Promise<void>;
 }
 
 function Tasks({
   tasks,
-  setTasks
+  setTasks,
+  obtenerTareas
 }: Props) {
 
   const [title, setTitle] = useState("");
 
   const [priority, setPriority] = useState("Alta");
 
-  const addTask = () => {
+  const addTask = async () => {
 
     if (title.trim() === "") {
       return;
     }
 
-    const newTask: Task = {
-      id: Date.now(),
-      title: title,
-      priority: priority,
-      completed: false
-    };
+    await fetch("http://localhost:3001/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        priority,
+      }),
+    });
 
-    setTasks([...tasks, newTask]);
+    await obtenerTareas();
 
     setTitle("");
     setPriority("Alta");
 
   };
 
-  const completeTask = (id: number) => {
+  const completeTask = async (id: number) => {
 
-    const updatedTasks = tasks.map((task) =>
+    await fetch(`http://localhost:3001/tasks/${id}`, {
+      method: "PATCH",
+    });
 
-      task.id === id
-        ? { ...task, completed: true }
-        : task
-
-    );
-
-    setTasks(updatedTasks);
+    await obtenerTareas();
 
   };
 
-  const deleteTask = (id: number) => {
+  const deleteTask = async (id: number) => {
 
-    const filteredTasks = tasks.filter(
-      (task) => task.id !== id
-    );
+    await fetch(`http://localhost:3000/tasks/${id}`, {
+      method: "DELETE",
+    });
 
-    setTasks(filteredTasks);
+    await obtenerTareas();
 
   };
 

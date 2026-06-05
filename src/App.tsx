@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
 import Stats from "./pages/Stats";
 import Navbar from "./components/Navbar";
+import api from "./api/axios";
 
 import { useEffect, useState } from "react";
 
@@ -18,11 +19,9 @@ function App() {
   }, []);
 
   const obtenerTareas = async () => {
-    const respuesta = await fetch("http://localhost:3001/tasks");
+    const respuesta = await api.get<Task[]>("/tasks");
 
-    const data = await respuesta.json();
-
-    setTasks(data);
+    setTasks(respuesta.data);
   };
 
   return (
@@ -42,7 +41,6 @@ function App() {
           element={
             <Tasks
               tasks={tasks}
-              setTasks={setTasks}
               obtenerTareas={obtenerTareas}
             />
           }

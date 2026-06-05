@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import type { Task } from "../interfaces/Task";
 
+import api from "../api/axios";
+
 import TaskForm from "../components/TaskForm";
 
 import TaskList from "../components/TaskList";
@@ -9,16 +11,11 @@ import TaskList from "../components/TaskList";
 interface Props {
   tasks: Task[];
 
-  setTasks: React.Dispatch<
-    React.SetStateAction<Task[]>
-  >;
-
   obtenerTareas: () => Promise<void>;
 }
 
 function Tasks({
   tasks,
-  setTasks,
   obtenerTareas
 }: Props) {
 
@@ -32,15 +29,9 @@ function Tasks({
       return;
     }
 
-    await fetch("http://localhost:3001/tasks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        priority,
-      }),
+    await api.post("/tasks", {
+      title,
+      priority,
     });
 
     await obtenerTareas();
@@ -52,9 +43,7 @@ function Tasks({
 
   const completeTask = async (id: number) => {
 
-    await fetch(`http://localhost:3001/tasks/${id}`, {
-      method: "PATCH",
-    });
+    await api.patch(`/tasks/${id}`);
 
     await obtenerTareas();
 
@@ -62,9 +51,7 @@ function Tasks({
 
   const deleteTask = async (id: number) => {
 
-    await fetch(`http://localhost:3001/tasks/${id}`, {
-      method: "DELETE",
-    });
+    await api.delete(`/tasks/${id}`);
 
     await obtenerTareas();
 
